@@ -39,7 +39,7 @@ class clientRoutes {
 
     //Actualizar contraseña
     this.router.patch(
-      "/changePassword",
+      "/changePassword/:token",
       // [verifyToken],
       userController.changePassword
     );

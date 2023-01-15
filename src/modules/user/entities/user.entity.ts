@@ -40,8 +40,9 @@ export class User extends BaseEntity {
 
   @Column({
     nullable: true,
+    type: 'varchar',
   })
-  tokenPassword: string;
+  tokenPassword: string | null;
 
   @OneToMany(() => Invitation, (invitation) => invitation.userId)
   @JoinTable()

@@ -136,6 +136,11 @@ class userController {
       });
       await User.save(userChangePassword);
 
+      // remove value tokenPassword
+      await User.update(userFound.id, {
+        tokenPassword: null,
+      });
+
       return res.json({ message: "SUCCESS FULL" });
     } catch (e) {
       console.error(e);

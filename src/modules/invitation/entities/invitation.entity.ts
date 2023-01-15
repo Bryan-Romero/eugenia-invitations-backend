@@ -34,8 +34,9 @@ export class Invitation extends BaseEntity {
 
   @Column({
     nullable: true,
+    type: 'varchar',
   })
-  tokenShare: string;
+  tokenShare: string | null;
 
   @ManyToOne(() => User, (client) => client.invitation)
   @JoinTable({ name: "userId" })
