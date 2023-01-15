@@ -13,10 +13,7 @@ export const AppDataSource = new DataSource({
   database: MYSQL_DB,
   synchronize: true,
   logging: false,
-  entities: [
-    User,
-    Invitation,
-  ],
+  entities: [User, Invitation],
   subscribers: [],
   migrations: [],
   //insecureAuth: true,

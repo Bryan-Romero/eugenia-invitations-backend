@@ -1,10 +1,10 @@
-import { Router } from 'express';
-import { validate } from '../../middleware/validation'; 
-import { verifyToken } from '../../middleware/authJWT';
-// import { authPermition } from '../../middleware/permission';
-// import { validate } from '../../middleware/validation';
-import userController from './userController';
-import { registerValidation, loginValidation } from './validation/user.validation';
+import { Router } from "express";
+import { validate } from "../../middleware/validation";
+import userController from "./userController";
+import {
+  registerValidation,
+  loginValidation,
+} from "./validation/user.validation";
 
 class clientRoutes {
   public router: Router = Router();
@@ -14,23 +14,35 @@ class clientRoutes {
   }
 
   config(): void {
-    
     // crear un nuevo usuario
     this.router.post(
-      '/',
+      "/",
       registerValidation(),
       validate,
-      userController.create_user,
-    ); 
+      userController.create_user
+    );
 
     // login usuario
     this.router.post(
-      '/login',
+      "/login",
       loginValidation(),
       validate,
-      userController.login,
-    ); 
-   
+      userController.login
+    );
+
+    // enviar email
+    this.router.post(
+      "/forgotPassword",
+      // [verifyToken],
+      userController.forgotPassword
+    );
+
+    //Actualizar contraseña
+    this.router.patch(
+      "/changePassword",
+      // [verifyToken],
+      userController.changePassword
+    );
   }
 }
 const statussclientRoutes = new clientRoutes();

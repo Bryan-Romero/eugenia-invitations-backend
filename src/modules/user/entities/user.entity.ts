@@ -38,6 +38,11 @@ export class User extends BaseEntity {
   @Column()
   departmentNumber: string;
 
+  @Column({
+    nullable: true,
+  })
+  tokenPassword: string;
+
   @OneToMany(() => Invitation, (invitation) => invitation.userId)
   @JoinTable()
   invitation: Invitation[];

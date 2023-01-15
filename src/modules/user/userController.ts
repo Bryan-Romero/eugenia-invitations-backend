@@ -2,7 +2,10 @@ import { Request, Response } from "express";
 import { sign } from "jsonwebtoken";
 import { config } from "../../config/settings";
 import { comparePassword, encryptedPassword } from "../../utils/bcrypt";
+import { generateTokenRandom } from "../../utils/crypto";
 import { User } from "./entities/user.entity";
+import { Nodemailer } from "../../utils/nodemailer";
+const node = new Nodemailer();
 
 class userController {
   /**
@@ -84,6 +87,59 @@ class userController {
     } catch (e) {
       console.error(e);
       res.status(400).json({ message: "Error login user" });
+    }
+  }
+  /**
+   * Funcion encargada de enviar email al correo
+   */
+  public async forgotPassword(req: Request, res: Response): Promise<any> {
+    const { email } = req.body;
+    const userFound = await User.findOne({ where: { email: email } });
+    if (!userFound) return res.status(404).json({ message: "No encontrado" });
+    const token = generateTokenRandom(30);
+    await User.update(userFound.id, {
+      tokenPassword: token,
+    });
+
+    const bodyMailOptionsI = {
+      from: "APP EUGENIA",
+      to: userFound.email,
+      subject: "Recuperar tu contraseña EUGENIA",
+      text: "Recuperar contraeña",
+      html: `
+        <p>Recuperar contraseña</p>
+        <p>https://eugenia/changePassword/${token}</p>
+      `,
+    };
+    await node.sendEmail(bodyMailOptionsI);
+
+    return res.status(200).json({ message: "Email enviado" });
+  }
+
+  /**
+   * Funcion encargada de cambiar la contraseña de un usuario
+   */
+  public async changePassword(req: Request, res: Response): Promise<any> {
+    const { token } = req.params;
+    const { password } = req.body;
+    try {
+      const userFound = await User.findOne({
+        where: {
+          tokenPassword: token,
+        },
+      });
+      if (!userFound) return res.status(404).json({ message: "No found user" });
+
+      const hashPassword = await encryptedPassword(password);
+      const userChangePassword = Object.assign(userFound, {
+        password: hashPassword,
+      });
+      await User.save(userChangePassword);
+
+      return res.json({ message: "SUCCESS FULL" });
+    } catch (e) {
+      console.error(e);
+      res.status(400).json({ message: "Error en la invitacion 2" });
     }
   }
 }

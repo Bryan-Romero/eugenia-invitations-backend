@@ -33,12 +33,12 @@ export class Invitation extends BaseEntity {
   expirationDate: Date;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   tokenShare: string;
 
   @ManyToOne(() => User, (client) => client.invitation)
-  @JoinTable({ name: 'userId' })
+  @JoinTable({ name: "userId" })
   public user!: User;
   @Column()
   userId: number;

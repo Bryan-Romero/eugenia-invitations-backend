@@ -9,9 +9,7 @@ export const loginValidation = () => {
       .isEmail()
       .withMessage("email formato incorrecto"),
 
-    body("password")
-      .exists()
-      .withMessage("required"),
+    body("password").exists().withMessage("required"),
   ];
 };
 

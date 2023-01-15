@@ -2,10 +2,6 @@ import { Request, Response } from "express";
 import { generateTokenRandom } from "../../utils/crypto";
 import { User } from "../user/entities/user.entity";
 import { Invitation } from "./entities/invitation.entity";
-// import { typeStatusClient } from '../../enums/statusClient.enum';
-// import { typeStatusProject } from '../../enums/statusProject.enum';
-// import { Project } from '../projects/entities/project.entity';
-// import { Client } from './entities/client.entity';
 
 class userController {
   /**
@@ -110,7 +106,7 @@ class userController {
       return res.status(201).json({ invitations, message: "SUCCESS FULL" });
     } catch (e) {
       console.error(e);
-      res.status(400).json({ message: "Error eliminar invitaciones" });
+      res.status(400).json({ message: "Error eliminar invitacion" });
     }
   }
 
@@ -130,23 +126,23 @@ class userController {
       if (!invitation)
         return res.status(404).json({ message: "No found invitatio" });
 
-      const { dateOfEntry, expirationDate } = invitation;
-      const toDay = new Date();
-      const toDayWithoutTime = new Date();
-      toDayWithoutTime.setHours(0, 0, 0, 0)
+      // const { dateOfEntry, expirationDate } = invitation;
+      // const toDay = new Date();
+      // const toDayWithoutTime = new Date();
+      // toDayWithoutTime.setHours(0, 0, 0, 0)
 
       // console.log(`${toDay} < ${dateOfEntry} = ${toDay < dateOfEntry}`);
       // console.log(`${toDayWithoutTime} > ${expirationDate} = ${toDayWithoutTime > expirationDate}`);
-      if (toDay < dateOfEntry)
-        return res
-          .status(404)
-          .json({
-            message: `Invitacion para el ${dateOfEntry.getFullYear()}-${
-              dateOfEntry.getMonth() + 1
-            }-${dateOfEntry.getDay()}  ${dateOfEntry.getHours()}:${dateOfEntry.getMinutes()}`,
-          });
-      if (toDayWithoutTime > expirationDate)
-        return res.status(404).json({ message: "Invitation expirada" });
+      // if (toDay < dateOfEntry)
+      //   return res
+      //     .status(404)
+      //     .json({
+      //       message: `Invitacion para el ${dateOfEntry.getFullYear()}-${
+      //         dateOfEntry.getMonth() + 1
+      //       }-${dateOfEntry.getDay()}  ${dateOfEntry.getHours()}:${dateOfEntry.getMinutes()}`,
+      //     });
+      // if (toDayWithoutTime > expirationDate)
+      //   return res.status(404).json({ message: "Invitation expirada" });
 
       return res.json({ invitation, message: "SUCCESS FULL" });
     } catch (e) {

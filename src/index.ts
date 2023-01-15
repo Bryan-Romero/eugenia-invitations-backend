@@ -1,12 +1,11 @@
-import 'reflect-metadata';
-import cors from 'cors';
-import express, { Application } from 'express';
-import morgan from 'morgan';
-import indexRoutes from './routes';
-import { config } from './config/settings';
+import "reflect-metadata";
+import cors from "cors";
+import express, { Application } from "express";
+import morgan from "morgan";
+import indexRoutes from "./routes";
+import { config } from "./config/settings";
 const { PORT } = config;
-import { AppDataSource } from './config/mysql.setting';
-
+import { AppDataSource } from "./config/mysql.setting";
 
 class Server {
   public app: Application;
@@ -18,16 +17,16 @@ class Server {
   }
 
   async config(): Promise<void> {
-    this.app.set('port', PORT);
-    this.app.use(morgan('dev')); //visualizar petición en consola
+    this.app.set("port", PORT);
+    this.app.use(morgan("dev")); //visualizar petición en consola
     this.app.use(
       cors({
-        origin: '*',
-      }),
+        origin: "*",
+      })
     ); //peticiones a servidor desde angular
     this.app.use(express.json()); //entender json (antes body parser)
     this.app.use(express.urlencoded({ extended: false })); //validar formuarios html
-    
+
     //Initialize typeorm
     try {
       await AppDataSource.initialize();
@@ -37,25 +36,25 @@ class Server {
     }
 
     this.app.use((req, res, next) => {
-      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader("Access-Control-Allow-Origin", "*");
       res.setHeader(
-        'Access-Control-Allow-Methods',
-        'GET,POST,PUT,PATCH,DELETE',
+        "Access-Control-Allow-Methods",
+        "GET,POST,PUT,PATCH,DELETE"
       );
-      res.setHeader('Access-Control-Allow-Methods', 'Content-Type');
+      res.setHeader("Access-Control-Allow-Methods", "Content-Type");
       next();
     });
   }
 
   //Routes
   routes(): void {
-    this.app.use('/api', indexRoutes);
+    this.app.use("/api", indexRoutes);
   }
 
   //Starting the server
   start(): void {
-    this.app.listen(this.app.get('port'), () => {
-      console.log('Server on port', this.app.get('port'));
+    this.app.listen(this.app.get("port"), () => {
+      console.log("Server on port", this.app.get("port"));
     });
   }
 }
