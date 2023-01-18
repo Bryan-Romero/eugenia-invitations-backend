@@ -11,7 +11,7 @@ class userController {
   /**
    * Funcion encargada de insertar un nuevo usuario
    */
-  public async create_user(req: Request, res: Response): Promise<any> {
+  public async createUser(req: Request, res: Response): Promise<any> {
     const { firstName, lastName, email, password, departmentNumber } = req.body;
     try {
       const userFound = await User.findOne({
@@ -20,7 +20,9 @@ class userController {
         },
       });
       if (userFound)
-        return res.status(400).json({ message: "User already exists" });
+        return res.status(400).json({
+          message: { email: "Este usuario ya existe" },
+        });
 
       const hashPassword = await encryptedPassword(password);
       const newUser = new User();
@@ -39,10 +41,14 @@ class userController {
         expiresIn: "1h",
       });
 
-      return res.status(201).json({ token, message: "SUCCESS FULL" });
+      res.json({
+        token,
+        user: `${saveUser.firstName} ${saveUser.lastName}`,
+        createAt: new Date(),
+      });
     } catch (e) {
       console.error(e);
-      res.status(400).json({ message: "Error register user" });
+      res.status(400).json({ message: "Algo ha salido mal" });
     }
   }
 
@@ -53,24 +59,20 @@ class userController {
     const { email, password } = req.body;
     try {
       let userFound: any = await User.findOne({
-        select: [
-          "id",
-          "firstName",
-          "lastName",
-          "email",
-          "password",
-          "departmentNumber",
-        ],
         where: {
           email,
         },
       });
       if (!userFound) {
-        return res.status(404).json({ message: "No found" });
+        return res
+          .status(404)
+          .json({ message: { email: "Usuario no encontrado" } });
       }
 
       if (!(await comparePassword(password, userFound.password)))
-        return res.status(401).json({ message: "Incorrect password" });
+        return res
+          .status(401)
+          .json({ message: { password: "Contraseña incorrecta" } });
 
       const payload = {
         userId: userFound.id,
@@ -86,34 +88,44 @@ class userController {
       });
     } catch (e) {
       console.error(e);
-      res.status(400).json({ message: "Error login user" });
+      res.status(400).json({ message: "Algo ha salido mal" });
     }
   }
+
   /**
    * Funcion encargada de enviar email al correo
    */
   public async forgotPassword(req: Request, res: Response): Promise<any> {
     const { email } = req.body;
     const userFound = await User.findOne({ where: { email: email } });
-    if (!userFound) return res.status(404).json({ message: "No encontrado" });
-    const token = generateTokenRandom(30);
-    await User.update(userFound.id, {
-      tokenPassword: token,
-    });
+    try {
+      if (!userFound)
+        return res
+          .status(404)
+          .json({ message: { email: "Usuario no encontrado" } });
 
-    const bodyMailOptionsI = {
-      from: "APP EUGENIA",
-      to: userFound.email,
-      subject: "Recuperar tu contraseña EUGENIA",
-      text: "Recuperar contraeña",
-      html: `
+      const token = generateTokenRandom(30);
+      await User.update(userFound.id, {
+        tokenPassword: token,
+      });
+
+      const bodyMailOptionsI = {
+        from: "APP EUGENIA",
+        to: userFound.email,
+        subject: "Recuperar tu contraseña EUGENIA",
+        text: "Recuperar contraeña",
+        html: `
         <p>Recuperar contraseña</p>
-        <p>https://eugenia/changePassword/${token}</p>
-      `,
-    };
-    await node.sendEmail(bodyMailOptionsI);
+        <p>http://localhost:3000/changePassword/${token}</p>
+        `,
+      };
+      await node.sendEmail(bodyMailOptionsI);
 
-    return res.status(200).json({ message: "Email enviado" });
+      return res.status(200).json({ message: "E-mail enviado" });
+    } catch (e) {
+      console.error(e);
+      res.status(400).json({ message: "Algo ha salido mal" });
+    }
   }
 
   /**
@@ -128,7 +140,10 @@ class userController {
           tokenPassword: token,
         },
       });
-      if (!userFound) return res.status(404).json({ message: "No found user" });
+      if (!userFound)
+        return res
+          .status(404)
+          .json({ message: { email: "Usuario no encontrado" } });
 
       const hashPassword = await encryptedPassword(password);
       const userChangePassword = Object.assign(userFound, {
@@ -141,10 +156,37 @@ class userController {
         tokenPassword: null,
       });
 
-      return res.json({ message: "SUCCESS FULL" });
+      return res.json({ message: "Se cambio la contraseña" });
     } catch (e) {
       console.error(e);
-      res.status(400).json({ message: "Error en la invitacion 2" });
+      res.status(400).json({ message: "Algo ha salido mal" });
+    }
+  }
+
+  /**
+   * Función que valida un token
+   */
+  public async validateToken(req: Request, res: Response): Promise<any> {
+    const { email } = req.user;
+    try {
+      let userFound: any = await User.findOne({
+        where: {
+          email,
+        },
+      });
+      if (!userFound)
+        return res
+          .status(404)
+          .json({ message: { email: "Usuario no encontrado" } });
+
+      res.json({
+        token: true,
+        user: `${userFound.firstName} ${userFound.lastName}`,
+        createAt: new Date(),
+      });
+    } catch (e) {
+      console.error(e);
+      res.status(400).json({ message: "Algo ha salido mal" });
     }
   }
 }

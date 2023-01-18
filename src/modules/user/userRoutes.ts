@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { verifyToken } from "../../middleware/authJWT";
 import { validate } from "../../middleware/validation";
 import userController from "./userController";
 import {
@@ -16,10 +17,10 @@ class clientRoutes {
   config(): void {
     // crear un nuevo usuario
     this.router.post(
-      "/",
+      "/createUser",
       registerValidation(),
       validate,
-      userController.create_user
+      userController.createUser
     );
 
     // login usuario
@@ -34,14 +35,23 @@ class clientRoutes {
     this.router.post(
       "/forgotPassword",
       // [verifyToken],
+      // validate,
       userController.forgotPassword
     );
 
-    //Actualizar contraseña
+    // actualizar contraseña
     this.router.patch(
       "/changePassword/:token",
       // [verifyToken],
+      // validate,
       userController.changePassword
+    );
+
+    // validar Token
+    this.router.get(
+      '/validate-token',
+      verifyToken,
+      userController.validateToken,
     );
   }
 }

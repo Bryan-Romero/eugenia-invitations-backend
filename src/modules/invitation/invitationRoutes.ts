@@ -17,7 +17,7 @@ class clientRoutes {
   config(): void {
     // crear una nueva invitacion
     this.router.patch(
-      "/",
+      "/create_invitation",
       createInvitationValidation(),
       [validate, verifyToken],
       invitationController.create_invitation
@@ -25,21 +25,21 @@ class clientRoutes {
 
     // consultar las invitaciones de un usuario
     this.router.get(
-      "/",
+      "/read_invitation",
       [validate, verifyToken],
       invitationController.read_invitation
     );
 
     // consultar una invitacion
     this.router.get(
-      "/:token",
+      "/getInvitationById/:token",
       [validate],
       invitationController.getInvitationById
     );
 
     // eliminar una nueva invitacion
     this.router.delete(
-      "/",
+      "/delete_invitation",
       deleteInvitationValidation(),
       [validate, verifyToken],
       invitationController.delete_invitation

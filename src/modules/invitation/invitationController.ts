@@ -16,7 +16,7 @@ class userController {
           id: userId,
         },
       });
-      if (!userFound) return res.status(404).json({ message: "No found user" });
+      if (!userFound) return res.status(404).json({ message: "Usuario no encontrado" });
 
       const newInvitation = new Invitation();
       newInvitation.guestName = guestName;
@@ -39,7 +39,20 @@ class userController {
         tokenShare: token,
       });
 
-      return res.status(201).json({ token, message: "SUCCESS FULL" });
+      const invitations = await Invitation.find({
+        select: {
+          id: true,
+          guestName: true,
+          dateOfEntry: true,
+          expirationDate: true,
+          tokenShare: true,
+        },
+        where: {
+          userId: userId,
+        },
+      });
+
+      return res.status(201).json({ invitations, token, message: "SUCCESS FULL" });
     } catch (e) {
       console.error(e);
       res.status(400).json({ message: "Error create invitation" });
@@ -61,9 +74,11 @@ class userController {
 
       const invitations = await Invitation.find({
         select: {
+          id: true,
           guestName: true,
           dateOfEntry: true,
           expirationDate: true,
+          tokenShare: true,
         },
         where: {
           userId: userId,
@@ -94,9 +109,11 @@ class userController {
       await Invitation.delete(id);
       const invitations = await Invitation.find({
         select: {
+          id: true,
           guestName: true,
           dateOfEntry: true,
           expirationDate: true,
+          tokenShare: true,
         },
         where: {
           userId: userId,
@@ -110,6 +127,9 @@ class userController {
     }
   }
 
+  /**
+   * Funcion encargada de leer una invitacion con tokenShare
+   */
   public async getInvitationById(req: Request, res: Response): Promise<any> {
     const { token } = req.params;
     try {
@@ -125,24 +145,6 @@ class userController {
       });
       if (!invitation)
         return res.status(404).json({ message: "No found invitatio" });
-
-      // const { dateOfEntry, expirationDate } = invitation;
-      // const toDay = new Date();
-      // const toDayWithoutTime = new Date();
-      // toDayWithoutTime.setHours(0, 0, 0, 0)
-
-      // console.log(`${toDay} < ${dateOfEntry} = ${toDay < dateOfEntry}`);
-      // console.log(`${toDayWithoutTime} > ${expirationDate} = ${toDayWithoutTime > expirationDate}`);
-      // if (toDay < dateOfEntry)
-      //   return res
-      //     .status(404)
-      //     .json({
-      //       message: `Invitacion para el ${dateOfEntry.getFullYear()}-${
-      //         dateOfEntry.getMonth() + 1
-      //       }-${dateOfEntry.getDay()}  ${dateOfEntry.getHours()}:${dateOfEntry.getMinutes()}`,
-      //     });
-      // if (toDayWithoutTime > expirationDate)
-      //   return res.status(404).json({ message: "Invitation expirada" });
 
       return res.json({ invitation, message: "SUCCESS FULL" });
     } catch (e) {
