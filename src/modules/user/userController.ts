@@ -116,7 +116,7 @@ class userController {
         text: "Recuperar contraeña",
         html: `
         <p>Recuperar contraseña</p>
-        <p>https://eugenia-invitation-8h24wfl5z-bryanromero.vercel.app/changePassword/${token}</p>
+        <p>https://eugenia-invitations.onrender.com/changePassword/${token}</p>
         `,
       };
       await node.sendEmail(bodyMailOptionsI);
