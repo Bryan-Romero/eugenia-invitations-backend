@@ -16,7 +16,8 @@ class userController {
           id: userId,
         },
       });
-      if (!userFound) return res.status(404).json({ message: "Usuario no encontrado" });
+      if (!userFound)
+        return res.status(404).json({ message: "Usuario no encontrado" });
 
       const newInvitation = new Invitation();
       newInvitation.guestName = guestName;
@@ -32,7 +33,7 @@ class userController {
       });
 
       if (!shareInvitation)
-        return res.status(404).json({ message: "No found invitation" });
+        return res.status(404).json({ message: "Usuario no encontrado" });
 
       const token = generateTokenRandom(20);
       await Invitation.update(invitation.id, {
@@ -52,10 +53,12 @@ class userController {
         },
       });
 
-      return res.status(201).json({ invitations, token, message: "SUCCESS FULL" });
+      return res
+        .status(201)
+        .json({ invitations, token, message: "SUCCESS FULL" });
     } catch (e) {
       console.error(e);
-      res.status(400).json({ message: "Error create invitation" });
+      res.status(400).json({ message: "Algo ha salido mal" });
     }
   }
 
@@ -70,7 +73,7 @@ class userController {
           id: userId,
         },
       });
-      if (!userFound) return res.status(404).json({ message: "No found user" });
+      if (!userFound) return res.status(404).json({ message: "Usuario no encontrado" });
 
       const invitations = await Invitation.find({
         select: {
@@ -88,7 +91,7 @@ class userController {
       return res.status(201).json({ invitations, message: "SUCCESS FULL" });
     } catch (e) {
       console.error(e);
-      res.status(400).json({ message: "Error leer invitaciones" });
+      res.status(400).json({ message: "Algo ha salido mal" });
     }
   }
 
@@ -104,7 +107,7 @@ class userController {
           id: userId,
         },
       });
-      if (!userFound) return res.status(404).json({ message: "No found user" });
+      if (!userFound) return res.status(404).json({ message: "Usuario no encontrado" });
 
       await Invitation.delete(id);
       const invitations = await Invitation.find({
@@ -123,7 +126,7 @@ class userController {
       return res.status(201).json({ invitations, message: "SUCCESS FULL" });
     } catch (e) {
       console.error(e);
-      res.status(400).json({ message: "Error eliminar invitacion" });
+      res.status(400).json({ message: "Algo ha salido mal" });
     }
   }
 
@@ -144,12 +147,12 @@ class userController {
         },
       });
       if (!invitation)
-        return res.status(404).json({ message: "No found invitatio" });
+        return res.status(404).json({ message: "Usuario no encontrado" });
 
       return res.json({ invitation, message: "SUCCESS FULL" });
     } catch (e) {
       console.error(e);
-      res.status(400).json({ message: "Error en la invitacion 2" });
+      res.status(400).json({ message: "Algo ha salido mal" });
     }
   }
 }
